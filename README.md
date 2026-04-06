@@ -39,13 +39,7 @@ project-1-business-analytics-dashboard/
 │
 ├── 📈 VisionDigitalIndia_MIS_Dashboard_2025.xlsx   ← Main Excel Dashboard File
 │
-├── 🖼️ screenshots/
-│   ├── excel_mis_report.png            ← MIS Monthly Report screenshot
-│   ├── excel_sla_dashboard.png         ← SLA Performance Dashboard screenshot
-│   ├── excel_pivot_summary.png         ← Pivot Summary with charts screenshot
-│   ├── powerbi_kpi_overview.png        ← Power BI KPI cards screenshot
-│   ├── powerbi_sla_trend.png           ← Power BI SLA trend line chart
-│   └── powerbi_service_breakdown.png   ← Power BI service breakdown charts
+├── 📈 VisionDigitalIndia_PowerBI_Dashboard.html    ← Power BI Dashboard File
 │
 ├── 📄 reports/
 │   └── MIS_Project_Summary_Report.md   ← Detailed project methodology report
