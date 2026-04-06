@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1400">
+<title>Power BI Dashboard — Vision Digital India</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f2f5;color:#252423;min-width:1300px}
+
+  /* TOP NAV */
+  .topbar{background:#1a1a2e;height:44px;display:flex;align-items:center;padding:0 20px;gap:16px;border-bottom:2px solid #0f3460}
+  .topbar-logo{color:#fff;font-size:14px;font-weight:700;letter-spacing:0.5px;display:flex;align-items:center;gap:8px}
+  .pbi-icon{width:20px;height:20px;background:linear-gradient(135deg,#f2c811,#e8a000);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#000;font-weight:900}
+  .topbar-title{color:#ccc;font-size:12px;margin-left:8px}
+  .topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px;font-size:11px;color:#aaa}
+  .topbar-btn{background:#0f3460;color:#fff;border:none;padding:4px 12px;border-radius:3px;font-size:11px;cursor:pointer}
+
+  /* RIBBON */
+  .ribbon{background:#fff;border-bottom:1px solid #e0e0e0;padding:6px 20px;display:flex;align-items:center;gap:8px}
+  .ribbon-tab{font-size:11px;color:#444;padding:4px 12px;border-radius:3px;cursor:pointer;font-weight:600}
+  .ribbon-tab.active{background:#f0f2f5;color:#1a1a2e;border-bottom:2px solid #f2c811}
+  .ribbon-sep{width:1px;height:20px;background:#ddd;margin:0 4px}
+
+  /* MAIN LAYOUT */
+  .main{display:flex;height:calc(100vh - 88px);min-height:700px}
+
+  /* LEFT PANEL */
+  .left-panel{width:220px;background:#fff;border-right:1px solid #e0e0e0;padding:12px 0;flex-shrink:0}
+  .panel-section{padding:8px 14px;font-size:10px;color:#888;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-top:8px}
+  .panel-item{padding:7px 14px 7px 24px;font-size:12px;color:#444;cursor:pointer;display:flex;align-items:center;gap:8px;border-left:3px solid transparent}
+  .panel-item:hover{background:#f5f5f5}
+  .panel-item.active{background:#fff8e1;border-left:3px solid #f2c811;color:#1a1a2e;font-weight:600}
+  .panel-icon{width:14px;height:14px;flex-shrink:0;opacity:0.6}
+
+  /* CANVAS */
+  .canvas-area{flex:1;overflow-y:auto;padding:16px;background:#f0f2f5}
+  .canvas-title{font-size:18px;font-weight:700;color:#1a1a2e;margin-bottom:4px}
+  .canvas-subtitle{font-size:12px;color:#888;margin-bottom:16px}
+
+  /* FILTER BAR */
+  .filter-bar{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:8px 16px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .filter-label{font-size:11px;font-weight:700;color:#555;white-space:nowrap}
+  .filter-pill{background:#f0f2f5;border:1px solid #ddd;border-radius:20px;padding:4px 12px;font-size:11px;color:#333;cursor:pointer}
+  .filter-pill.active{background:#1a1a2e;color:#fff;border-color:#1a1a2e}
+
+  /* KPI CARDS */
+  .kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:14px}
+  .kpi-card{background:#fff;border-radius:6px;padding:12px 14px;border:1px solid #e8e8e8;border-top:4px solid #f2c811}
+  .kpi-label{font-size:10px;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+  .kpi-val{font-size:22px;font-weight:700;color:#1a1a2e;line-height:1}
+  .kpi-sub{font-size:10px;margin-top:4px;display:flex;align-items:center;gap:4px}
+  .kpi-up{color:#107c10}
+  .kpi-down{color:#d83b01}
+  .kpi-neutral{color:#888}
+
+  /* CHART GRID */
+  .chart-grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px}
+  .chart-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+  .chart-box{background:#fff;border-radius:6px;padding:14px;border:1px solid #e8e8e8}
+  .chart-box.full{grid-column:1/-1}
+  .chart-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .chart-title{font-size:13px;font-weight:700;color:#252423}
+  .chart-badge{font-size:10px;background:#f0f2f5;border:1px solid #ddd;border-radius:3px;padding:2px 8px;color:#555}
+  .chart-wrap{position:relative;height:200px}
+  .chart-wrap.tall{height:240px}
+  .chart-wrap.short{height:160px}
+
+  /* TABLE */
+  .tbl-box{background:#fff;border-radius:6px;padding:14px;border:1px solid #e8e8e8;margin-bottom:12px}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px}
+  .tbl th{background:#1a1a2e;color:#fff;padding:7px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.04em}
+  .tbl td{padding:6px 10px;border-bottom:1px solid #f0f0f0;color:#333}
+  .tbl tr:nth-child(even) td{background:#fafafa}
+  .tbl tr:hover td{background:#fff8e1}
+  .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+  .badge-green{background:#dff6dd;color:#107c10}
+  .badge-amber{background:#fff4ce;color:#835b00}
+  .badge-red{background:#fde7e9;color:#c50f1f}
+
+  /* SLICER */
+  .right-panel{width:180px;background:#fff;border-left:1px solid #e0e0e0;padding:12px;flex-shrink:0}
+  .slicer-title{font-size:11px;font-weight:700;color:#1a1a2e;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eee}
+  .slicer-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:11px;color:#444;cursor:pointer}
+  .slicer-check{width:14px;height:14px;border:2px solid #ccc;border-radius:3px;background:#fff;flex-shrink:0}
+  .slicer-check.checked{background:#f2c811;border-color:#f2c811}
+
+  /* STATUS BAR */
+  .statusbar{background:#1a1a2e;height:22px;display:flex;align-items:center;padding:0 16px;gap:20px;font-size:10px;color:#aaa;border-top:1px solid #0f3460}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="topbar">
+  <div class="topbar-logo">
+    <div class="pbi-icon">PBI</div>
+    Microsoft Power BI Desktop
+  </div>
+  <div class="topbar-title">VisionDigitalIndia_Analytics_Dashboard.pbix</div>
+  <div class="topbar-right">
+    <span>Musharraf Ghani Raza</span>
+    <button class="topbar-btn">Publish</button>
+    <button class="topbar-btn">Share</button>
+  </div>
+</div>
+
+<!-- RIBBON -->
+<div class="ribbon">
+  <span class="ribbon-tab active">Report</span>
+  <span class="ribbon-tab">Data</span>
+  <span class="ribbon-tab">Model</span>
+  <div class="ribbon-sep"></div>
+  <span class="ribbon-tab">Home</span>
+  <span class="ribbon-tab">Insert</span>
+  <span class="ribbon-tab">Modeling</span>
+  <span class="ribbon-tab">View</span>
+  <div class="ribbon-sep"></div>
+  <span style="font-size:11px;color:#888;margin-left:auto">Last refreshed: 06 Apr 2025, 10:32 AM</span>
+</div>
+
+<div class="main">
+  <!-- LEFT NAV PANEL -->
+  <div class="left-panel">
+    <div class="panel-section">Pages</div>
+    <div class="panel-item active">📊 SLA Performance</div>
+    <div class="panel-item">📈 Revenue Analysis</div>
+    <div class="panel-item">🎫 Ticket Tracker</div>
+    <div class="panel-item">👥 Client Overview</div>
+    <div class="panel-item">📋 MIS Summary</div>
+    <div class="panel-section">Fields</div>
+    <div class="panel-item">∑ Tickets Raised</div>
+    <div class="panel-item">∑ Tickets Resolved</div>
+    <div class="panel-item">∑ SLA Compliance %</div>
+    <div class="panel-item">∑ Revenue (INR)</div>
+    <div class="panel-item">∑ CSAT Score</div>
+    <div class="panel-item">📅 Month</div>
+    <div class="panel-item">🏷 Service Category</div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-area">
+    <div class="canvas-title">SLA & Business Performance Dashboard</div>
+    <div class="canvas-subtitle">Vision Digital India &nbsp;|&nbsp; Business Analytics Dashboard Project &nbsp;|&nbsp; Jan – Mar 2025 &nbsp;|&nbsp; Analyst: Musharraf Ghani Raza</div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <span class="filter-label">Period:</span>
+      <span class="filter-pill active">Jan 2025</span>
+      <span class="filter-pill active">Feb 2025</span>
+      <span class="filter-pill active">Mar 2025</span>
+      <span class="filter-label" style="margin-left:12px">Service:</span>
+      <span class="filter-pill active">All Services</span>
+      <span class="filter-label" style="margin-left:12px">Status:</span>
+      <span class="filter-pill active">All</span>
+      <span class="filter-pill">Met SLA Only</span>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="kpi-row">
+      <div class="kpi-card" style="border-top-color:#0f6cbd">
+        <div class="kpi-label">Total Tickets Raised</div>
+        <div class="kpi-val">1,459</div>
+        <div class="kpi-sub"><span class="kpi-up">▲ 4.2%</span><span class="kpi-neutral">vs prev period</span></div>
+      </div>
+      <div class="kpi-card" style="border-top-color:#107c10">
+        <div class="kpi-label">Tickets Resolved</div>
+        <div class="kpi-val">1,337</div>
+        <div class="kpi-sub"><span class="kpi-up">▲ 91.6%</span><span class="kpi-neutral">resolution rate</span></div>
+      </div>
+      <div class="kpi-card" style="border-top-color:#f2c811">
+        <div class="kpi-label">Avg SLA Compliance</div>
+        <div class="kpi-val">92.4%</div>
+        <div class="kpi-sub"><span class="kpi-up">▲ 2.1%</span><span class="kpi-neutral">vs Jan baseline</span></div>
+      </div>
+      <div class="kpi-card" style="border-top-color:#8661c5">
+        <div class="kpi-label">Avg CSAT Score</div>
+        <div class="kpi-val">87.6%</div>
+        <div class="kpi-sub"><span class="kpi-up">▲ 0.8%</span><span class="kpi-neutral">month-on-month</span></div>
+      </div>
+      <div class="kpi-card" style="border-top-color:#d83b01">
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-val">₹57.7L</div>
+        <div class="kpi-sub"><span class="kpi-up">▲ 9.2%</span><span class="kpi-neutral">vs target</span></div>
+      </div>
+      <div class="kpi-card" style="border-top-color:#00b4d8">
+        <div class="kpi-label">MIS Reports Issued</div>
+        <div class="kpi-val">15</div>
+        <div class="kpi-sub"><span class="kpi-neutral">Weekly + Monthly</span></div>
+      </div>
+    </div>
+
+    <!-- ROW 2: LINE + DONUT -->
+    <div class="chart-grid">
+      <div class="chart-box">
+        <div class="chart-hdr">
+          <span class="chart-title">Weekly SLA Compliance Trend</span>
+          <span class="chart-badge">Line Chart</span>
+        </div>
+        <div class="chart-wrap tall"><canvas id="lineChart"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">
+          <span class="chart-title">Ticket Status Split</span>
+          <span class="chart-badge">Donut</span>
+        </div>
+        <div class="chart-wrap tall"><canvas id="donutChart"></canvas></div>
+      </div>
+    </div>
+
+    <!-- ROW 3: BAR + BAR + BAR -->
+    <div class="chart-grid-3">
+      <div class="chart-box">
+        <div class="chart-hdr">
+          <span class="chart-title">Revenue by Service (INR)</span>
+          <span class="chart-badge">Bar</span>
+        </div>
+        <div class="chart-wrap"><canvas id="revBar"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">
+          <span class="chart-title">CSAT Score by Service</span>
+          <span class="chart-badge">Bar</span>
+        </div>
+        <div class="chart-wrap"><canvas id="csatBar"></canvas></div>
+      </div>
+      <div class="chart-box">
+        <div class="chart-hdr">
+          <span class="chart-title">Monthly Ticket Volume</span>
+          <span class="chart-badge">Stacked Bar</span>
+        </div>
+        <div class="chart-wrap"><canvas id="stackBar"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="tbl-box">
+      <div class="chart-hdr">
+        <span class="chart-title">Service-wise SLA Performance Table</span>
+        <span class="chart-badge">Table Visual</span>
+      </div>
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Service Category</th>
+            <th>Target SLA</th>
+            <th>Jan Actual</th>
+            <th>Feb Actual</th>
+            <th>Mar Actual</th>
+            <th>Avg Compliance</th>
+            <th>Tickets</th>
+            <th>CSAT</th>
+            <th>Revenue (INR)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Helpdesk Support</td><td>95.0%</td><td>88.9%</td><td>90.3%</td><td>91.2%</td><td>90.1%</td><td>238</td><td>91.2%</td><td>₹9,20,000</td><td><span class="badge badge-amber">AT RISK</span></td></tr>
+          <tr><td>Software Delivery</td><td>90.0%</td><td>93.2%</td><td>94.0%</td><td>94.1%</td><td>93.8%</td><td>195</td><td>94.1%</td><td>₹13,50,000</td><td><span class="badge badge-green">MET</span></td></tr>
+          <tr><td>Data Processing</td><td>92.0%</td><td>82.1%</td><td>84.5%</td><td>85.6%</td><td>84.1%</td><td>187</td><td>85.6%</td><td>₹6,80,000</td><td><span class="badge badge-red">BREACHED</span></td></tr>
+          <tr><td>Network Ops</td><td>93.0%</td><td>86.4%</td><td>87.9%</td><td>88.3%</td><td>87.5%</td><td>201</td><td>88.3%</td><td>₹7,90,000</td><td><span class="badge badge-amber">AT RISK</span></td></tr>
+          <tr><td>Client Reporting</td><td>95.0%</td><td>95.1%</td><td>95.8%</td><td>96.2%</td><td>95.7%</td><td>176</td><td>96.2%</td><td>₹11,00,000</td><td><span class="badge badge-green">MET</span></td></tr>
+          <tr><td>Finance Advisory</td><td>90.0%</td><td>91.8%</td><td>92.3%</td><td>92.7%</td><td>92.3%</td><td>162</td><td>92.7%</td><td>₹7,30,000</td><td><span class="badge badge-green">MET</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RIGHT SLICER PANEL -->
+  <div class="right-panel">
+    <div class="slicer-title">Month Slicer</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>January 2025</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>February 2025</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>March 2025</div>
+    <br>
+    <div class="slicer-title">Service Slicer</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Helpdesk</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Software Del.</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Data Processing</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Network Ops</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Client Reporting</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Finance Advisory</div>
+    <br>
+    <div class="slicer-title">SLA Status</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Met</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>At Risk</div>
+    <div class="slicer-item"><div class="slicer-check checked"></div>Breached</div>
+    <br>
+    <div class="slicer-title">Visual Info</div>
+    <div style="font-size:10px;color:#888;line-height:1.6;margin-top:4px">
+      Data Source:<br>Raw Data Sheet<br>
+      Rows: 72<br>
+      Cols: 8<br>
+      Last Refresh:<br>06 Apr 2025
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="statusbar">
+  <span>Page 1 of 5</span>
+  <span>|</span>
+  <span>72 rows loaded</span>
+  <span>|</span>
+  <span>8 columns</span>
+  <span>|</span>
+  <span>Vision Digital India — Business Analytics Dashboard</span>
+  <span style="margin-left:auto">Musharraf Ghani Raza &nbsp;|&nbsp; Business Analyst Intern &nbsp;|&nbsp; Jan–Mar 2025</span>
+</div>
+
+<script>
+const labels6 = ['Helpdesk','Software Del.','Data Proc.','Network Ops','Client Rep.','Finance Adv.'];
+const weeks12 = ['W1','W2','W3','W4','W5','W6','W7','W8','W9','W10','W11','W12'];
+
+// Line Chart
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: weeks12,
+    datasets: [
+      {label:'SLA Compliance %', data:[89.0,91.4,91.5,92.9,92.6,93.4,94.0,93.8,90.9,93.0,94.5,94.6], borderColor:'#f2c811', backgroundColor:'rgba(242,200,17,0.08)', tension:0.4, pointRadius:4, pointBackgroundColor:'#f2c811', borderWidth:2},
+      {label:'CSAT Score %', data:[86.2,88.1,87.9,88.3,89.0,89.5,89.8,88.9,85.1,86.0,86.5,86.3], borderColor:'#0f6cbd', backgroundColor:'rgba(15,108,189,0.06)', tension:0.4, pointRadius:4, pointBackgroundColor:'#0f6cbd', borderWidth:2, borderDash:[4,3]}
+    ]
+  },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top', labels:{font:{size:10}, boxWidth:12}}}, scales:{y:{min:82, max:97, grid:{color:'#f0f0f0'}, ticks:{font:{size:10}, callback:v=>v+'%'}}, x:{grid:{display:false}, ticks:{font:{size:10}}}}}
+});
+
+// Donut Chart
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Resolved','In Progress','Escalated','Pending'],
+    datasets: [{data:[1337, 68, 32, 22], backgroundColor:['#107c10','#0f6cbd','#d83b01','#f2c811'], borderWidth:2, borderColor:'#fff'}]
+  },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'right', labels:{font:{size:10}, boxWidth:12, padding:8}}, tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} (${(ctx.parsed/1459*100).toFixed(1)}%)`}}}, cutout:'65%'}
+});
+
+// Revenue Bar
+new Chart(document.getElementById('revBar'), {
+  type: 'bar',
+  data: {
+    labels: labels6,
+    datasets: [
+      {label:'Jan', data:[310000,430000,220000,260000,360000,240000], backgroundColor:'#1a1a2e'},
+      {label:'Feb', data:[295000,460000,230000,275000,370000,255000], backgroundColor:'#0f3460'},
+      {label:'Mar', data:[315000,460000,230000,255000,370000,235000], backgroundColor:'#f2c811'}
+    ]
+  },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top', labels:{font:{size:9}, boxWidth:10}}}, scales:{x:{grid:{display:false}, ticks:{font:{size:9}}}, y:{grid:{color:'#f5f5f5'}, ticks:{font:{size:9}, callback:v=>'₹'+(v/1000).toFixed(0)+'K'}}}}
+});
+
+// CSAT Bar
+new Chart(document.getElementById('csatBar'), {
+  type: 'bar',
+  data: {
+    labels: labels6,
+    datasets: [{label:'CSAT %', data:[91.2,94.1,85.6,88.3,96.2,92.7], backgroundColor:['#d83b01','#107c10','#d83b01','#835b00','#107c10','#107c10']}]
+  },
+  options:{responsive:true, maintainAspectRatio:false, indexAxis:'y', plugins:{legend:{display:false}}, scales:{x:{min:80, max:100, grid:{color:'#f5f5f5'}, ticks:{font:{size:9}, callback:v=>v+'%'}}, y:{grid:{display:false}, ticks:{font:{size:9}}}}}
+});
+
+// Stacked Bar
+new Chart(document.getElementById('stackBar'), {
+  type: 'bar',
+  data: {
+    labels: ['January','February','March'],
+    datasets: [
+      {label:'Resolved', data:[438,421,478], backgroundColor:'#107c10'},
+      {label:'Breaches', data:[12,8,15], backgroundColor:'#d83b01'},
+      {label:'Pending',  data:[42,27,18], backgroundColor:'#f2c811'}
+    ]
+  },
+  options:{responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'top', labels:{font:{size:9}, boxWidth:10}}}, scales:{x:{stacked:true, grid:{display:false}, ticks:{font:{size:10}}}, y:{stacked:true, grid:{color:'#f5f5f5'}, ticks:{font:{size:9}}}}}
+});
+</script>
+</body>
+</html>
