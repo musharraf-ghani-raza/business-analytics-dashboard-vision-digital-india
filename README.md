@@ -131,8 +131,7 @@ The Power BI dashboard provides an interactive view of the same dataset with:
 4. All KPI values auto-calculate from the Raw Data sheet
 
 ### Power BI Dashboard
-1. Open `screenshots/` folder to view all Power BI visuals
-2. The full interactive dashboard HTML is available at [Power BI Dashboard](../project-1-business-analytics-dashboard/VisionDigitalIndia_PowerBI_Dashboard.html)
+1. The full interactive dashboard HTML is available at [Power BI Dashboard](../project-1-business-analytics-dashboard/VisionDigitalIndia_PowerBI_Dashboard.html)
 
 ---
 
