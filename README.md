@@ -18,7 +18,7 @@
 
 ## Dashboard preview
 
-![Business Analytics Dashboard — Power BI](assets/dashboard_preview.png)
+![Business Analytics Dashboard — Power BI](assets/dashboard_preview.jpg)
 
 *SLA Performance page (top) · Revenue, CSAT & SLA Table page (bottom) — fully interactive with Month and Service slicers*
 
@@ -100,7 +100,7 @@ cd project-1-business-analytics-dashboard
 project-1-business-analytics-dashboard/
 │
 ├── assets/
-│   └── dashboard_preview.png           ← Dashboard screenshot (this file)
+│   └── dashboard_preview.jpg           ← Dashboard screenshot (this file)
 │
 ├── data/
 │   ├── raw_data.csv                    ← Raw business performance dataset (72 rows)
