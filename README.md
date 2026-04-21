@@ -18,9 +18,8 @@
 
 ## Dashboard preview
 
-![Business Analytics Dashboard — Power BI](assets/dashboard_preview.jpg)
+[View Interactive Power BI Dashboard](VisionDigitalIndia_PowerBI_Dashboard.html)
 
-*SLA Performance page (top) · Revenue, CSAT & SLA Table page (bottom) — fully interactive with Month and Service slicers*
 
 ---
 
